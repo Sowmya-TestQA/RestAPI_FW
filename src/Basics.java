@@ -4,13 +4,17 @@ import io.restassured.path.json.JsonPath;
 import static io.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.*;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 import org.testng.Assert;
 
 import files.Payload;
 
 public class Basics {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		// Validate Add place API in google maps
 		//given - All input details
 		//when - Submit the API with resource url and http method
@@ -18,8 +22,9 @@ public class Basics {
 		
 		RestAssured.baseURI = "https://rahulshettyacademy.com";
 		 String response = given().log().all().queryParam("key", "qaclick123").header("Content-Type","application/json")
-		.body(Payload.AddPlace())
-		.when().post("maps/api/place/add/json")
+				 .body(new String(Files.readAllBytes(Paths.get("C:\\Users\\sowmya\\eclipse-workspace\\RestAPI_FW\\src\\files\\payload_data.json"))))
+		//.body(Payload.AddPlace())- // one way of passing json from java class where we can make the json dynamic by passing params.
+		.when().post("maps/api/place/add/json") // another way of passing json where json payloads are static and passed from external location
 		.then().assertThat().statusCode(200).body("scope", equalTo("APP"))
 				.header("server","Apache/2.4.52 (Ubuntu)").extract().response().asString();
 		 System.out.println(response);
